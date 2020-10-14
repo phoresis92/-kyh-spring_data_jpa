@@ -5,14 +5,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import tk.youngdk.datajpa.domain.Member;
+import tk.youngdk.datajpa.domain.Team;
+import tk.youngdk.datajpa.dto.MemberDto;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -20,6 +20,9 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    TeamRepository teamRepository;
 
     @Test
     @DisplayName("저장 테스트")
@@ -133,5 +136,41 @@ class MemberRepositoryTest {
         List<Member> findUser = memberRepository.findUser("AAA", 20);
 
         assertThat(findUser.get(0)).isEqualTo(member2);
+    }
+
+    @Test
+    public void findUserNameList(){
+
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("AAB", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<String> userNameList = memberRepository.findUserNameList();
+
+        userNameList.stream()
+                .forEach(userName -> System.out.println("userName = " + userName));
+
+    }
+
+    @Test
+    public void findMemberDto(){
+
+        Team team1 = new Team("team1");
+
+        teamRepository.save(team1);
+
+        Member member1 = new Member("AAA", 10, team1);
+        Member member2 = new Member("AAB", 20, team1);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<MemberDto> memberDtos = memberRepository.findMemberDto();
+
+        memberDtos.stream()
+                .forEach(memberDto -> System.out.println("memberDto = " + memberDto));
+
     }
 }

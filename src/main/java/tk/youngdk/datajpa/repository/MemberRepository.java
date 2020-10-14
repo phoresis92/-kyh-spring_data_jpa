@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import tk.youngdk.datajpa.domain.Member;
+import tk.youngdk.datajpa.dto.MemberDto;
 
 import java.util.List;
 
@@ -26,4 +27,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 이름 없는 NamedQuery라고 생각하면 편하다
     @Query("select m from Member m where m.userName = :username and m.age = :age")
     List<Member> findUser(@Param("username") String username, @Param("age") int age);
+
+    @Query("select m.userName from Member m")
+    List<String> findUserNameList();
+
+    @Query("select new tk.youngdk.datajpa.dto.MemberDto(m.id, m.userName, t.teamName) from Member m left join m.team t")
+    List<MemberDto> findMemberDto();
 }
