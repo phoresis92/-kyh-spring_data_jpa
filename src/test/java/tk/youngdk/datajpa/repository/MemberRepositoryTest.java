@@ -10,6 +10,7 @@ import tk.youngdk.datajpa.domain.Member;
 import tk.youngdk.datajpa.domain.Team;
 import tk.youngdk.datajpa.dto.MemberDto;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -171,6 +172,22 @@ class MemberRepositoryTest {
 
         memberDtos.stream()
                 .forEach(memberDto -> System.out.println("memberDto = " + memberDto));
+
+    }
+
+    @Test
+    public void findByNames(){
+
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> byNames = memberRepository.findByNames(Arrays.asList("AAA", "BBB"));
+
+        byNames.stream()
+                .forEach(member -> System.out.println("member = " + member));
 
     }
 }
