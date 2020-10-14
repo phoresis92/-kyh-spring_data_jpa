@@ -106,4 +106,18 @@ class MemberRepositoryTest {
                 .forEach(member -> System.out.println("member = " + member));
 
     }
+
+    @Test
+    public void namedQuery() {
+
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("AAA", 20);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> findMembers = memberRepository.findByUserName("AAA");
+
+        assertThat(findMembers.get(0)).isEqualTo(member1);
+    }
 }

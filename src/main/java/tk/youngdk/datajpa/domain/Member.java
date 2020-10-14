@@ -8,6 +8,11 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "userName", "age"})
+@NamedQuery(
+        name = "Member.findByUserName",
+        query = "select m from Member m where m.userName = :username"
+)
+// 장점!!! => 어플리케이션 로딩 시점에 쿼리를 파싱하여 문법 오류를 반환한다.
 public class Member {
     public Member(String userName) {
         this.userName = userName;
