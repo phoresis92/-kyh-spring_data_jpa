@@ -21,4 +21,9 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 2. JpaRepository<Entity, Id> Entity 클래스에 등록된 NamedQuery 적용
     // 3. 메서드 쿼리 적
     List<Member> findByUserName(@Param("username") String username);
+
+    // 에플리케이션 로딩 시점에 쿼리를 파싱하여 오류를 반환한다.
+    // 이름 없는 NamedQuery라고 생각하면 편하다
+    @Query("select m from Member m where m.userName = :username and m.age = :age")
+    List<Member> findUser(@Param("username") String username, @Param("age") int age);
 }
