@@ -12,6 +12,7 @@ spring:
         physical-strategy: tk.youngdk.datajpa.common.PrefixPhysicalNamingStrategy
     properties:
       hibernate:
+#        dialect: org.hibernate.dialect.Oracle10gDialect
         # show_sql: true
         format_sql: true
 
