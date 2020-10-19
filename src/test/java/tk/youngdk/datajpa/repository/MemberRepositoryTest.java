@@ -4,6 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 import tk.youngdk.datajpa.domain.Member;
@@ -214,5 +218,82 @@ class MemberRepositoryTest {
         Optional<Member> memberOptional = memberRepository.findOptionalByUserName("AAA");
 
         System.out.println("memberOptional = " + memberOptional);
+    }
+
+    @Test
+    public void findByPage() {
+        //given
+        Member member1 = new Member("member1", 10);
+        Member member2 = new Member("member2", 10);
+        Member member3 = new Member("member3", 10);
+        Member member4 = new Member("member4", 10);
+        Member member5 = new Member("member5", 10);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        memberRepository.save(member4);
+        memberRepository.save(member5);
+
+        int age = 10;
+        int offset = 0;
+        int limit = 3;
+
+        PageRequest pageRequest = PageRequest.of(offset, limit, Sort.by(Sort.Direction.DESC, "userName"));
+
+        //when
+        Page<Member> page = memberRepository.findPageByAge(age, pageRequest);
+//        long totalCount = memberRepository.totalCount(age);
+
+        /**
+         * 엔티티 그대로 반환 하지 말자!!!
+         * */
+        Page<MemberDto> map = page.map(member -> new MemberDto(member.getId(), member.getUserName(), null));
+
+        //then
+        List<Member> content = page.getContent();
+        long totalElements = page.getTotalElements();
+        int totalPages = page.getTotalPages();
+
+        content.stream()
+                .forEach(member -> System.out.println("member = " + member));
+
+        System.out.println("totalElements = " + totalElements);
+        System.out.println("totalPages = " + totalPages);
+
+        assertThat(content.size()).isEqualTo(limit);
+        assertThat(totalElements).isEqualTo(5);
+        assertThat(page.getNumber()).isEqualTo(offset);
+        assertThat(totalPages).isEqualTo(2);
+        assertThat(page.isFirst()).isTrue();
+        assertThat(page.hasNext()).isTrue();
+
+        System.out.println("==============================================");
+        System.out.println("==============================================");
+        System.out.println("==============================================");
+
+        Slice<Member> slice = memberRepository.findSliceByAge(age, pageRequest);
+
+        List<Member> content2 = slice.getContent();
+
+        content2.stream()
+                .forEach(member -> System.out.println("member222 = " + member));
+
+        assertThat(content2.size()).isEqualTo(limit);
+//        assertThat(slice.getTotalElements).isEqualTo(5);
+        assertThat(slice.getNumber()).isEqualTo(offset);
+//        assertThat(slice.getTotalPages()).isEqualTo(2);
+        assertThat(slice.isFirst()).isTrue();
+        assertThat(slice.hasNext()).isTrue();
+
+        System.out.println("==============================================");
+        System.out.println("==============================================");
+        System.out.println("==============================================");
+
+        List<Member> list = memberRepository.findListByAge(age, pageRequest);
+
+        list.stream()
+                .forEach(member -> System.out.println("member = " + member));
+
     }
 }
