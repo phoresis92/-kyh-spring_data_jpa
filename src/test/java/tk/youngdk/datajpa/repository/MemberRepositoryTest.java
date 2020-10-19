@@ -14,6 +14,8 @@ import tk.youngdk.datajpa.domain.Member;
 import tk.youngdk.datajpa.domain.Team;
 import tk.youngdk.datajpa.dto.MemberDto;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +28,10 @@ class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
-
     @Autowired
     TeamRepository teamRepository;
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     @DisplayName("저장 테스트")
@@ -296,4 +299,41 @@ class MemberRepositoryTest {
                 .forEach(member -> System.out.println("member = " + member));
 
     }
+
+    @Test
+    public void bulkUpdateSpringJpa(){
+        // given
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        //when
+        int resultCount = memberRepository.bulkAgePlus(20);
+
+        /**
+         * 벌크 연산 후 영속성 컨텍스트 초기화
+         * Spring Data Jpa 에서 @Modifying(clearAutomatically = true)
+         **/
+//        em.flush();
+//        em.clear();
+
+        //then
+        assertThat(resultCount).isEqualTo(3);
+
+
+        /**
+         * 문제접!!!
+         * 벌크성 업데이트는 영속성 컨텍스트에 저장하는 것이 아니라
+         * 데이터베이스에 바로 쿼리를 날려 버린다
+         * 즉 영속성 컨텍스트에 남아있는 데이터와 불일치한다!!!
+         * 벌크 연산을 하고 나서 영속성 컨텍스트를 모두 날려줘야한다
+         * */
+        List<Member> result = memberRepository.findByUserName("member5");
+        Member member5 = result.get(0);
+        System.out.println("member5 = " + member5);
+    }
+
 }
+
