@@ -368,8 +368,47 @@ class MemberRepositoryTest {
                     System.out.println("m.getTeam().getClass() = " + m.getTeam().getClass());
                     System.out.println("m.getTeam().getTeamName() = " + m.getTeam().getTeamName());
                 });
-        
+    }
 
+    @Test
+    public void queryHint() {
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+//        Member findMember = memberRepository.findById(member1.getId()).get();
+        Member findMember = memberRepository.findReadOnlyByUserName("member1");
+
+        /*
+        영속성 컨텍스트에 관리되는 객체로 업데이트 쿼리가 날라간다
+        그러나 롤백을 위해서 원본 데이터를 추가적으로 보관하기 때문에 메모리 코스트가 소요된다.
+        만약 조회용으로만 사용할시 QueryHint 로 readOnly 속성을 준다
+        */
+        System.out.println("MemberRepositoryTest.queryHint");
+        findMember.changeName("member2");
+
+        em.flush();
+
+    }
+
+    @Test
+    @DisplayName("lock")
+    public void lock() throws Exception {
+        //given
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        //when
+        List<Member> findMember = memberRepository.findLockByUserName("member1");
+
+        em.flush();
+
+        //then
     }
 }
 
