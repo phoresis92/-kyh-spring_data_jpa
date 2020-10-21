@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import tk.youngdk.datajpa.domain.Member;
 import tk.youngdk.datajpa.dto.MemberDto;
+import tk.youngdk.datajpa.repository.custom_repository.MemberRepositoryCustom;
 
 import javax.persistence.Entity;
 import javax.persistence.LockModeType;
@@ -15,7 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     List<Member> findByUserNameAndAgeGreaterThan (String userName, int age);
 
