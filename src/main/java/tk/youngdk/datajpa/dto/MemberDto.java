@@ -1,6 +1,7 @@
 package tk.youngdk.datajpa.dto;
 
 import lombok.Data;
+import tk.youngdk.datajpa.domain.Member;
 
 @Data
 public class MemberDto {
@@ -13,5 +14,11 @@ public class MemberDto {
         this.id = id;
         this.userName = userName;
         this.teamName = teamName;
+    }
+
+    public MemberDto(Member member) {
+        id = member.getId();
+        userName = member.getUserName();
+//        teamName
     }
 }

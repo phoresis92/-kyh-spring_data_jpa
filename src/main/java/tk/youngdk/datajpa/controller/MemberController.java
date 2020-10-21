@@ -1,11 +1,15 @@
 package tk.youngdk.datajpa.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tk.youngdk.datajpa.domain.Member;
+import tk.youngdk.datajpa.dto.MemberDto;
 import tk.youngdk.datajpa.repository.MemberRepository;
 
 import javax.annotation.PostConstruct;
@@ -39,8 +43,21 @@ public class MemberController {
         return member.getUserName();
     }
 
+    @PostMapping("/members")
+    public Page<MemberDto> list(@PageableDefault(size = 5) Pageable pageable) {
+        Page<Member> all = memberRepository.findAll(pageable);
+
+//        return all.map(member -> new MemberDto(member.getId(), member.getUserName(), null/*member.getTeam().getTeamName()*/));
+//        return all.map(member -> new MemberDto(member));
+        return all.map(MemberDto::new);
+//        return all;
+    }
+
     @PostConstruct
     public void init() {
-        memberRepository.save(new Member("userA"));
+        for (int i = 0; i < 100; i++) {
+
+            memberRepository.save(new Member("user" + i, i));
+        }
     }
 }
