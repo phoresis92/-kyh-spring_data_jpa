@@ -7,14 +7,14 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString(of = {"id", "userName", "age"})
+@ToString(of = {"id", "userName", "age"}, callSuper = true)
 @NamedQuery(
         name = "Member.findByUserName",
         query = "select m from Member m where m.userName = :username"
 )
 // 장점!!! => 어플리케이션 로딩 시점에 쿼리를 파싱하여 문법 오류를 반환한다.
 @NamedEntityGraph(name = "Member.all", attributeNodes = @NamedAttributeNode("team"))
-public class Member {
+public class Member extends BaseEntity {
     public Member(String userName) {
         this.userName = userName;
     }
