@@ -3,6 +3,7 @@ package tk.youngdk.datajpa.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import tk.youngdk.datajpa.domain.Member;
 import tk.youngdk.datajpa.dto.MemberDto;
 
+import javax.persistence.Entity;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +29,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     // 1. @Query 어노테이션적용
     // 2. JpaRepository<Entity, Id> Entity 클래스에 등록된 NamedQuery 적용
     // 3. 메서드 쿼리 적
-    List<Member> findByUserName(@Param("username") String username);
+//    List<Member> findByUserName(@Param("username") String username);
 
     // 에플리케이션 로딩 시점에 쿼리를 파싱하여 오류를 반환한다.
     // 이름 없는 NamedQuery라고 생각하면 편하다
@@ -59,4 +61,19 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying(clearAutomatically = true)
     @Query("update Member m set m.age = m.age + 1 where m.age >= :age")
     int bulkAgePlus(@Param("age") int age);
+
+    @Query("select m from Member m left join fetch m.team t")
+    List<Member> findFetchByAll();
+
+    @Override
+    @EntityGraph(attributePaths = "team")
+    List<Member> findAll();
+
+    @Query("select m from Member m")
+    @EntityGraph(attributePaths = "team")
+    List<Member> findMemberEntityGraph();
+
+//    @EntityGraph(attributePaths = "team")
+    @EntityGraph("Member.all")
+    List<Member> findByUserName(@Param("username") String username);
 }

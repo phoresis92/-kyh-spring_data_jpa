@@ -335,5 +335,41 @@ class MemberRepositoryTest {
         System.out.println("member5 = " + member5);
     }
 
+    @Test
+    public void findMemberLazy() {
+        //given
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        System.out.println("before flush");
+        em.flush();
+        em.clear();
+        System.out.println("after flush");
+
+        //when
+//        List<Member> all = memberRepository.findAll();
+//        List<Member> all = memberRepository.findEntityGraphByAll();
+//        List<Member> all = memberRepository.findMemberEntityGraph();
+        List<Member> all = memberRepository.findByUserName("member1");
+
+
+        all.stream()
+                .forEach(m -> {
+                    System.out.println("m = " + m);
+                    System.out.println("m.getTeam().getClass() = " + m.getTeam().getClass());
+                    System.out.println("m.getTeam().getTeamName() = " + m.getTeam().getTeamName());
+                });
+        
+
+    }
 }
 
